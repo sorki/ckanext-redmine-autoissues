@@ -10,22 +10,22 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='''ckanext-syndicate''',
+    name='''ckanext-redmine-autoissues''',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='1.0.3',
+    version='1.0.0',
 
-    description='''Allows syndication (pushing) of datasets to another repository''',
+    description='''Allows creating tickets in redmine instance''',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/aptivate/ckanext-syndicate',
+    url='https://github.com/sorki/ckanext-redmine-autoissues',
 
     # Author details
-    author='''Aptivate''',
-    author_email='''info@aptivate.org''',
+    author='''sorki''',
+    author_email='''srk@48.io''',
 
     # Choose your license
     license='AGPL',
@@ -49,7 +49,7 @@ setup(
 
 
     # What does your project relate to?
-    keywords='''CKAN syndication replication''',
+    keywords='''CKAN redmine synchronization''',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
@@ -60,7 +60,7 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/technical.html#install-requires-vs-requirements-files
     install_requires=[
-        "ckanapi",
+        "python-redmine",
     ],
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
@@ -80,13 +80,13 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points='''
         [ckan.plugins]
-        syndicate=ckanext.syndicate.plugin:SyndicatePlugin
+        redmine=ckanext.redmine.plugin:SyndicatePlugin
 
-	[babel.extractors]
-	ckan = ckan.lib.extract:extract_ckan
+    [babel.extractors]
+    ckan = ckan.lib.extract:extract_ckan
 
         [ckan.celery_task]
-        tasks=ckanext.syndicate.celery_import:task_imports
+        tasks=ckanext.redmine.celery_import:task_imports
     ''',
 
     # If you are changing from the default layout of your extension, you may

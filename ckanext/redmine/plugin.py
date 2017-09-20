@@ -12,49 +12,36 @@ from ckan.model.domain_object import DomainObjectOperation
 import uuid
 
 
-def get_syndicate_flag():
-    return config.get('ckan.syndicate.flag', 'syndicate')
+def get_redmine_flag():
+    return config.get('ckan.redmine.flag', 'redmine_url')
 
 
-def get_syndicated_id():
-    return config.get('ckan.syndicate.id', 'syndicated_id')
+def get_redmine_url():
+    return config.get('ckan.redmine.url')
 
 
-def get_syndicated_author():
-    return config.get('ckan.syndicate.author')
+def get_redmine_apikey():
+    return config.get('ckan.redmine.apikey')
 
 
-def get_syndicated_name_prefix():
-    return config.get('ckan.syndicate.name_prefix', '')
+def get_redmine_project():
+    return config.get('ckan.redmine.project')
 
 
-def get_syndicated_organization():
-    return config.get('ckan.syndicate.organization', None)
-
-
-def is_organization_preserved():
-    return asbool(config.get('ckan.syndicate.replicate_organization', False))
-
-
-def syndicate_dataset(package_id, topic):
+def redmine_dataset(package_id, topic):
     ckan_ini_filepath = os.path.abspath(config['__file__'])
     celery.send_task(
-        'syndicate.sync_package',
+        'redmine.create_ticket',
         args=[package_id, topic, ckan_ini_filepath],
         task_id='{}-{}'.format(str(uuid.uuid4()), package_id)
     )
 
 
-class SyndicatePlugin(plugins.SingletonPlugin):
+class RedminePlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IDomainObjectModification, inherit=True)
 
     # IConfigurer
-
-    def update_config(self, config_):
-        toolkit.add_template_directory(config_, 'templates')
-        toolkit.add_public_directory(config_, 'public')
-        toolkit.add_resource('fanstatic', 'syndicate')
 
     ## Based on ckanext-webhooks plugin
     # IDomainObjectNotification & IResourceURLChange
@@ -64,17 +51,13 @@ class SyndicatePlugin(plugins.SingletonPlugin):
             return
 
         if isinstance(entity, model.Package):
-            self._syndicate_dataset(entity, operation)
+            self._redmine_dataset(entity, operation)
 
-    def _syndicate_dataset(self, dataset, operation):
+    def _redmine_dataset(self, dataset, operation):
         topic = self._get_topic('dataset', operation)
 
-        if topic is not None and self._syndicate(dataset):
-            syndicate_dataset(dataset.id, topic)
-
-    def _syndicate(self, dataset):
-        return (not dataset.private and
-                asbool(dataset.extras.get(get_syndicate_flag(), 'false')))
+        if topic is not None:
+            redmine_dataset(dataset.id, topic)
 
     def _get_topic(self, prefix, operation):
         topics = {
