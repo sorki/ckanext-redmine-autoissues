@@ -3,7 +3,6 @@ import os
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.lib.celery_app import celery
-from ckan.lib.helpers import asbool
 
 from pylons import config
 import ckan.model as model
@@ -14,6 +13,10 @@ import uuid
 
 def get_redmine_flag():
     return config.get('ckan.redmine.flag', 'redmine_url')
+
+
+def get_redmine_subject_prefix():
+    return config.get('ckan.redmine.subject_prefix', 'New dataset')
 
 
 def get_redmine_url():
@@ -52,6 +55,9 @@ class RedminePlugin(plugins.SingletonPlugin):
 
         if isinstance(entity, model.Package):
             self._redmine_dataset(entity, operation)
+
+    def update_config(self, config_):
+        pass
 
     def _redmine_dataset(self, dataset, operation):
         topic = self._get_topic('dataset', operation)

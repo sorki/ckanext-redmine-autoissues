@@ -8,20 +8,23 @@ from pylons import config
 
 import ckan.plugins.toolkit as toolkit
 from ckan.lib.celery_app import celery
-from ckan.lib.helpers import get_pkg_dict_extra
+from ckan.lib.helpers import get_pkg_dict_extra, url_for
 from ckanext.redmine.plugin import (
     get_redmine_flag,
     get_redmine_url,
     get_redmine_apikey,
-    get_redmine_project
+    get_redmine_project,
+    get_redmine_subject_prefix
 )
+
+from redminelib import Redmine
 
 logger = logging.getLogger(__name__)
 
 
 @celery.task(name='redmine.create_ticket')
 def create_ticket_task(package, action, ckan_ini_filepath):
-    logger = sync_package_task.get_logger()
+    logger = create_ticket_task.get_logger()
     load_config(ckan_ini_filepath)
     register_translator()
     logger.info("Create ticket for package %s, with action %s" % (package, action))
@@ -102,16 +105,22 @@ def _create_ticket(package):
     proj = redmine.project.get(get_redmine_project())
 
     logger.info("Creating redmine issue")
-    redmine.issue.create(
-            project_id=proj.identifier,
-            subject='New dataset {}'.format(package['title'])
-            description='URL: {}'.format(package['id']))
+
+    url = url_for(controller='package', action='read', id=package['name'], qualified=True)
+    issue = redmine.issue.create(
+                project_id=proj.identifier,
+                subject='{} {}'.format(get_redmine_subject_prefix(), package['title']),
+                description='URL: {}'.format(url))
 
     logger.info("Setting redmine url for package {}".format(package))
 
+    urltemplate = "{}/issues/{}/"
+    if get_redmine_url().endswith('/'):
+        urltemplate = "{}issues/{}/"
+
     set_redmine_url(
             package,
-            "{}/issues/{}/".format(get_redmine_url(), issue.id))
+            urltemplate.format(get_redmine_url(), issue.id))
 
     logger.info("Done")
 

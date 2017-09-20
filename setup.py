@@ -80,7 +80,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points='''
         [ckan.plugins]
-        redmine=ckanext.redmine.plugin:SyndicatePlugin
+        redmine=ckanext.redmine.plugin:RedminePlugin
 
     [babel.extractors]
     ckan = ckan.lib.extract:extract_ckan
