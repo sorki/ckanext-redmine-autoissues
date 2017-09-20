@@ -4,6 +4,8 @@ ckanext-redmine-autoissues
 
 CKAN plugin to automatically create redmine issues when new dataset appears.
 
+Based on `ckanext-syndicate <https://github.com/aptivate/ckanext-syndicate>`_.
+
 ------------
 Requirements
 ------------
