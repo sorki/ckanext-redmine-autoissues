@@ -24,9 +24,9 @@ To install ckanext-redmine:
 
     . /usr/lib/ckan/default/bin/activate
 
-2. Install the ckanext-redmine Python package into your virtual environment::
+2. Install the ckanext-redmine-autoissues Python package into your virtual environment::
 
-    pip install ckanext-redmine
+    pip install ckanext-redmine-autoissues
 
 3. Add ``redmine`` to the ``ckan.plugins`` setting in your CKAN
    config file (by default the config file is located at
