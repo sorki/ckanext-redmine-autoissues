@@ -94,10 +94,10 @@ Place the provided ``ckan-celery.service`` file to ``/etc/systemd/system/``::
     systemctl enable ckan-celery
 
 ---------------------------------------------------
-Releasing a New Version of ckanext-redis-autoissues
+Releasing a New Version of ckanext-redmine-autoissues
 ---------------------------------------------------
 
-ckanext-redis-autoissues is availabe on PyPI as https://pypi.python.org/pypi/ckanext-redis-autoissues.
+ckanext-redmine-autoissues is availabe on PyPI as https://pypi.python.org/pypi/ckanext-redmine-autoissues.
 To publish a new version to PyPI follow these steps:
 
 1. Update the version number in the ``setup.py`` file.
