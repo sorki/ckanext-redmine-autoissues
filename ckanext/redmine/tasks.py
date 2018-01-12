@@ -6,6 +6,7 @@ import routes
 
 from pylons import config
 
+import ckan
 import ckan.plugins.toolkit as toolkit
 from ckan.lib.helpers import get_pkg_dict_extra, url_for
 
@@ -75,7 +76,7 @@ def register_translator():
     from paste.registry import Registry
     from pylons import translator
     from ckan.lib.cli import MockTranslator
-    if 'registery' not in globals():
+    if 'registry' not in globals():
         global registry
         registry = Registry()
         registry.prepare()
@@ -87,13 +88,13 @@ def register_translator():
 
 
 def sync_package(package_id, action, ckan_ini_filepath=None):
-    logger.info('sync package {0}'.format(package_id))
+    logger.info('sync package')
 
     # load the package at run of time task (rather than use package state at
     # time of task creation).
     from ckan import model
     context = {'model': model, 'ignore_auth': True, 'session': model.Session,
-               'use_cache': False, 'validate': False}
+               'use_cache': False, 'validate': True}
 
     params = {
         'id': package_id,
@@ -124,7 +125,7 @@ def _create_ticket(package):
                 subject='{} {}'.format(get_redmine_subject_prefix(), package['title']),
                 description='URL: {}'.format(url))
 
-    logger.info("Setting redmine url for package {}".format(package))
+    logger.info("Setting redmine url for package")
 
     urltemplate = "{}/issues/{}/"
     if get_redmine_url().endswith('/'):
@@ -136,29 +137,20 @@ def _create_ticket(package):
 
     logger.info("Done")
 
-
 def set_redmine_url(local_package, url):
-    """ Set the remote package id on the local package """
-    extras = local_package['extras']
-    extras_dict = dict([(o['key'], o['value']) for o in extras])
-    extras_dict.update({get_redmine_flag(): url})
-    extras = [{'key': k, 'value': v} for (k, v) in extras_dict.iteritems()]
-    local_package['extras'] = extras
-    _update_package_extras(local_package)
+    """ Set redmine url """
+    local_package[get_redmine_flag()] = url
+    _update_package(local_package)
+
+def _update_package(package):
+    site_user = ckan.logic.get_action('get_site_user')({
+            'model': ckan.model,
+            'ignore_auth': True},
+            {}
+      )
+
+    context = {'model': ckan.model, 'ignore_auth': True, 'session': ckan.model.Session,
+               'use_cache': False, 'validate': True, 'user': site_user['name']}
+    toolkit.get_action('package_update')(context, package)
 
 
-def _update_package_extras(package):
-    from ckan import model
-    from ckan.lib.dictization.model_save import package_extras_save
-
-    package_id = package['id']
-    package_obj = model.Package.get(package_id)
-    if not package:
-        raise Exception('No Package with ID %s found:s' % package_id)
-
-    extra_dicts = package.get("extras")
-    context_ = {'model': model, 'session': model.Session}
-    model.repo.new_revision()
-    package_extras_save(extra_dicts, package_obj, context_)
-    model.Session.commit()
-    model.Session.flush()
