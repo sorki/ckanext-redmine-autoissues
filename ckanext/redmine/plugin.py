@@ -8,12 +8,12 @@ from pylons import config
 import ckan.model as model
 from ckan.model.domain_object import DomainObjectOperation
 
-from ckanext.redmine.tasks import create_ticket
+from ckanext.redmine.tasks import create_ticket_task
 
 
 def redmine_dataset(package_id, topic):
     ckan_ini_filepath = os.path.abspath(config['__file__'])
-    jobs.enqueue(create_ticket, [package_id, topic, ckan_ini_filepath])
+    jobs.enqueue(create_ticket_task, [package_id, topic, ckan_ini_filepath])
 
 class RedminePlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
