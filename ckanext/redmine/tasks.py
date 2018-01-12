@@ -1,6 +1,6 @@
 import logging
 from urlparse import urlparse
-import ckanapi
+
 import os
 import routes
 
