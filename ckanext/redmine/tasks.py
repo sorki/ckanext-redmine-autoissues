@@ -7,22 +7,37 @@ import routes
 from pylons import config
 
 import ckan.plugins.toolkit as toolkit
-from ckan.lib.celery_app import celery
 from ckan.lib.helpers import get_pkg_dict_extra, url_for
-from ckanext.redmine.plugin import (
-    get_redmine_flag,
-    get_redmine_url,
-    get_redmine_apikey,
-    get_redmine_project,
-    get_redmine_subject_prefix
-)
 
 from redminelib import Redmine
 
-logger = logging.getLogger(__name__)
+# ------------- #
+# config access #
+# ------------- #
+
+def get_redmine_flag():
+    return config.get('ckan.redmine.flag', 'redmine_url')
 
 
-@celery.task(name='redmine.create_ticket')
+def get_redmine_subject_prefix():
+    return config.get('ckan.redmine.subject_prefix', 'New dataset')
+
+
+def get_redmine_url():
+    return config.get('ckan.redmine.url')
+
+
+def get_redmine_apikey():
+    return config.get('ckan.redmine.apikey')
+
+
+def get_redmine_project():
+    return config.get('ckan.redmine.project')
+
+# ----------- #
+# entry point #
+# ----------- #
+
 def create_ticket_task(package, action, ckan_ini_filepath):
     logger = create_ticket_task.get_logger()
     load_config(ckan_ini_filepath)
@@ -31,13 +46,10 @@ def create_ticket_task(package, action, ckan_ini_filepath):
     return sync_package(package, action)
 
 
-# TODO: why mp this
-# enable celery logging for when you run nosetests -s
-log = logging.getLogger('ckanext.redmine.tasks')
-
+logger = logging.getLogger(__name__)
 
 def get_logger():
-    return log
+    return logger
 create_ticket_task.get_logger = get_logger
 
 
