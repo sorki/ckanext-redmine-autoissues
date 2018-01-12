@@ -14,7 +14,6 @@ from ckanext.redmine.tasks import create_ticket
 def redmine_dataset(package_id, topic):
     ckan_ini_filepath = os.path.abspath(config['__file__'])
     jobs.enqueue(create_ticket, [package_id, topic, ckan_ini_filepath])
-    )
 
 class RedminePlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
