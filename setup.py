@@ -82,11 +82,8 @@ setup(
         [ckan.plugins]
         redmine=ckanext.redmine.plugin:RedminePlugin
 
-    [babel.extractors]
-    ckan = ckan.lib.extract:extract_ckan
-
-        [ckan.celery_task]
-        tasks=ckanext.redmine.celery_import:task_imports
+        [babel.extractors]
+        ckan = ckan.lib.extract:extract_ckan
     ''',
 
     # If you are changing from the default layout of your extension, you may

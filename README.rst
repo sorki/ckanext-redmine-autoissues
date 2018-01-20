@@ -10,8 +10,7 @@ Based on `ckanext-syndicate <https://github.com/aptivate/ckanext-syndicate>`_.
 Requirements
 ------------
 
-* Tested with CKAN 2.5.x branch
-* Requires ``celery``
+* Requires ``python-redmine``
 * To work over SSL, requires ``pyOpenSSL``, ``ndg-httpsclient`` and ``pyasn1``
 
 ------------
@@ -32,13 +31,13 @@ To install ckanext-redmine:
    config file (by default the config file is located at
    ``/etc/ckan/default/production.ini``).
 
-4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
+4. Restart CKAN. For example if you've deployed CKAN with Apache::
 
     sudo service apache2 reload
 
-5. You will also need to set up celery. In a development environment this can be done with the following paster command from within your virtual environment::
+5. You will also need to set up RQ job runner, to test it you can run::
 
-    paster --plugin=ckan celeryd run -c /etc/ckan/default/development.ini
+   paster jobs worker default
 
 ---------------
 Config Settings
@@ -76,22 +75,6 @@ do::
     pip install -r dev-requirements.txt
 
 See also Installation
-
-----------------------------
-Running Celery in production
-----------------------------
-
-Place the provided ``ckan-celery.service`` file to ``/etc/systemd/system/``::
-
-    cp ckan-celery.service /etc/systemd/system/
-    systemctl daemon-reload
-    systemctl start ckan-celery
-    # check with
-    systemctl status -l ckan-celery
-    # watch with
-    journalctl -f
-    # enable permanently with
-    systemctl enable ckan-celery
 
 ---------------------------------------------------
 Releasing a New Version of ckanext-redmine-autoissues
